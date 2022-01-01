@@ -1,6 +1,8 @@
 package com.example.finalexam;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -102,6 +104,7 @@ public class ChatFragment extends Fragment {
                         }
                     });
                     binding.recyclerViewChat.setLayoutManager(new LinearLayoutManager(getContext()));
+                    binding.recyclerViewChat.getLayoutManager().scrollToPosition(chats.size()-1);
                     binding.recyclerViewChat.setAdapter(new UserChatApdapter());
                 }
             }
@@ -112,38 +115,16 @@ public class ChatFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         setupList();
-//        chats.clear();
-//        db.collection("chat").document(mAuth.getCurrentUser().getUid()).collection(mUserID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @RequiresApi(api = Build.VERSION_CODES.N)
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if(task.isSuccessful()){
-//                    for(QueryDocumentSnapshot document: task.getResult()){
-//                        String msg = (String)document.get("msg");
-//                        String user = (String)document.get("user");
-//                        Timestamp ts = (Timestamp) document.get("time");
-//                        String id = document.getId();
-//                        chats.add(new Chats(user,msg,ts,id));
-//                    }
-//                    chats.sort(new Comparator<Chats>() {
-//                        @Override
-//                        public int compare(Chats o1, Chats o2) {
-//                            return o1.Time.compareTo(o2.Time);
-//                        }
-//                    });
-//                    binding.recyclerViewChat.setLayoutManager(new LinearLayoutManager(getContext()));
-//                    binding.recyclerViewChat.setAdapter(new UserChatApdapter());
-//                }
-//            }
-//        });
+
         binding.buttonChatClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.back();
-//                getActivity().getSupportFragmentManager().popBackStack();
             }
         });
+
         binding.buttonChatSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -224,7 +205,6 @@ public class ChatFragment extends Fragment {
 
                 senderArray.update("allchats",FieldValue.arrayRemove(mUserID));
                 receiverArray.update("allchats",FieldValue.arrayRemove(mAuth.getCurrentUser().getUid()));
-//                getActivity().getSupportFragmentManager().popBackStack();
                 mListener.back();
             }
         });
@@ -265,19 +245,35 @@ public class ChatFragment extends Fragment {
             holder.textViewChatMsg.setText(chat.LastMsg);
             SimpleDateFormat sfd = new SimpleDateFormat("MM/dd/yyyy HH:mm a");
             holder.textViewChatTime.setText(sfd.format(chat.Time.toDate()));
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("ALert!!!");
+            builder.setMessage("Do you really want to delete Message")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            db.collection("chat").document(mAuth.getCurrentUser().getUid()).collection(mUserID).document(chat.id).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        mListener.refreshChat(mUserID);
+                                    }
+                                }
+                            });
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+
+            AlertDialog dialog = builder.create();
+
             holder.imageButtonChatDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //Alert and Delete Msg
-                    db.collection("chat").document(mAuth.getCurrentUser().getUid()).collection(mUserID).document(chat.id).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
-//                                getActivity().getSupportFragmentManager().popBackStack();
-                                mListener.back();
-                            }
-                        }
-                    });
+                    dialog.show();
                 }
             });
         }
