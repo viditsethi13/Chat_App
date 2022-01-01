@@ -54,6 +54,5 @@ public class MainActivity extends AppCompatActivity implements MyChatFragment.My
         if(fragment != null){
             fragment.setupList();
         }
-//        getSupportFragmentManager().popBackStack();
     }
 }
