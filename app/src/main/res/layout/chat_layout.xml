@@ -10,10 +10,11 @@
         android:id="@+id/textViewChatName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonChatDelete"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewChatPhoto"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -56,5 +57,15 @@
         app:layout_constraintBottom_toTopOf="@+id/textViewChatMsg"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_delete" />
+
+    <ImageView
+        android:id="@+id/imageViewChatPhoto"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewChatName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/chat"
+        tools:srcCompat="@drawable/chat" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

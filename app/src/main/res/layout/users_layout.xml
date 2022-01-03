@@ -11,6 +11,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewUserPhoto"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageViewUserPhoto"
+        android:layout_width="30dp"
+        android:layout_height="26dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewUser"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/chat" />
 </androidx.constraintlayout.widget.ConstraintLayout>

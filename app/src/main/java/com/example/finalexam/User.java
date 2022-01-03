@@ -3,10 +3,13 @@ package com.example.finalexam;
 public class User {
     String Name;
     String UserId;
+    String uri;
 
-    public User(String name, String userId) {
+
+    public User(String name, String userId, String uri) {
         Name = name;
         UserId = userId;
+        this.uri = uri;
     }
 
     public String getName() {
@@ -23,6 +26,14 @@ public class User {
 
     public void setUserId(String userId) {
         UserId = userId;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     @Override

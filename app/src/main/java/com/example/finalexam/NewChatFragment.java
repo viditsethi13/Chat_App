@@ -1,6 +1,7 @@
 package com.example.finalexam;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -26,6 +28,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,8 +74,9 @@ public class NewChatFragment extends Fragment {
                     for(QueryDocumentSnapshot document : task.getResult()){
                         String name = (String) document.get("name");
                         String userid = (String) document.get("userid");
+                        String uri = (String) document.get("uri");
                         if(!mAuth.getCurrentUser().getUid().equals(userid))
-                            users.add(new User(name,userid));
+                            users.add(new User(name,userid,uri));
                     }
                     binding.recyclerVIewNewChat.setLayoutManager(new LinearLayoutManager(getContext()));
                     binding.recyclerVIewNewChat.setAdapter(new NewChatAdapter());
@@ -86,7 +90,6 @@ public class NewChatFragment extends Fragment {
         binding.buttonNewChatCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                getActivity().getSupportFragmentManager().popBackStack();
                 mListener.back();
             }
         });
@@ -119,9 +122,7 @@ public class NewChatFragment extends Fragment {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful()){
-                                    Log.d(TAG, "onComplete: send msg done");
                                     db.collection("chat").document(mAuth.getCurrentUser().getUid()).update("allchats",FieldValue.arrayUnion(userReceiverID));
-                                    Log.d(TAG, "onComplete: send");
                                 }
                                 else{
                                     Log.d(TAG, "onComplete:  send msg failed");
@@ -146,7 +147,6 @@ public class NewChatFragment extends Fragment {
                         db.collection("chat").document(userReceiverID).update("allchats",FieldValue.arrayUnion(mAuth.getCurrentUser().getUid()));
 
                         mListener.back();
-//                        getActivity().getSupportFragmentManager().popBackStack();
                     }
                 }
             }
@@ -165,8 +165,14 @@ public class NewChatFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull NewChatHolder holder, int position) {
             User user = users.get(position);
-
             holder.textViewUser.setText(user.getName());
+            try{
+                Uri uri = Uri.parse(user.getUri());
+                Picasso.get().load(uri).into(holder.imageViewUserPhoto);
+            }
+            catch(Exception e){
+                Log.d(TAG, "onComplete: No Image");
+            }
             holder.textViewUser.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -184,10 +190,12 @@ public class NewChatFragment extends Fragment {
     public class NewChatHolder extends RecyclerView.ViewHolder{
 
         TextView textViewUser;
+        ImageView imageViewUserPhoto;
         View view;
         public NewChatHolder(@NonNull View itemView) {
             super(itemView);
             textViewUser = itemView.findViewById(R.id.textViewUser);
+            imageViewUserPhoto = itemView.findViewById(R.id.imageViewUserPhoto);
             view  = itemView;
         }
     }

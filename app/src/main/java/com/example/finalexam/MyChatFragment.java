@@ -2,6 +2,7 @@ package com.example.finalexam;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.finalexam.databinding.FragmentMyChatBinding;
@@ -28,6 +30,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -150,6 +153,13 @@ public class MyChatFragment extends Fragment {
                     for(QueryDocumentSnapshot documentSnapshots: task.getResult()){
                         if(documentSnapshots.get("userid").equals(chat.Name)){
                             holder.textViewName.setText(documentSnapshots.get("name").toString());
+                            try{
+                                Uri uri = Uri.parse(documentSnapshots.get("uri").toString());
+                                Picasso.get().load(uri).into(holder.imageViewChatPhoto);
+                            }
+                            catch(Exception e){
+                                Log.d(TAG, "onComplete: No Image");
+                            }
                             break;
                         }
                     }
@@ -162,7 +172,6 @@ public class MyChatFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     //Goto the particular chat page
-//                    getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container,ChatFragment.newInstance(chat.Name)).commit();
                     mListener.gotoChatFragment(chat.Name);
                 }
             });
@@ -178,12 +187,14 @@ public class MyChatFragment extends Fragment {
         TextView textViewName;
         TextView textViewLastMsg;
         TextView textViewTime;
+        ImageView imageViewChatPhoto;
         View view;
         public MyChatHolder(@NonNull View itemView) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.textViewName);
             textViewLastMsg = itemView.findViewById(R.id.textViewLastMsg);
             textViewTime = itemView.findViewById(R.id.textViewTime);
+            imageViewChatPhoto = itemView.findViewById(R.id.imageViewMyChatPhoto);
             view = itemView;
         }
     }

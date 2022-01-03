@@ -3,6 +3,7 @@ package com.example.finalexam;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -34,6 +35,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,6 +54,7 @@ public class ChatFragment extends Fragment {
     FragmentChatBinding binding;
     private FirebaseAuth mAuth;
     List<Chats> chats = new ArrayList<>();
+    Uri uriMe;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -115,7 +118,17 @@ public class ChatFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        db.collection("chat").document("users").collection("users").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    uriMe = Uri.parse(task.getResult().get("uri").toString());
+                }
+                else{
+                    uriMe = null;
+                }
+            }
+        });
         setupList();
 
         binding.buttonChatClose.setOnClickListener(new View.OnClickListener() {
@@ -225,6 +238,12 @@ public class ChatFragment extends Fragment {
             Chats chat = chats.get(position);
             if(mAuth.getCurrentUser().getUid().equals(chat.Name)){
                 holder.textViewChatName.setText("Me");
+                try{
+                    Picasso.get().load(uriMe).into(holder.imageViewChatPhoto);
+                }
+                catch(Exception e){
+                    Log.d(TAG, "onComplete: No Image");
+                }
             }
             else{
                 db.collection("chat").document("users").collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -232,6 +251,13 @@ public class ChatFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for(QueryDocumentSnapshot documentSnapshots: task.getResult()){
                             if(documentSnapshots.get("userid").equals(chat.Name)){
+                                try{
+                                    Uri uri = Uri.parse(documentSnapshots.get("uri").toString());
+                                    Picasso.get().load(uri).into(holder.imageViewChatPhoto);
+                                }
+                                catch(Exception e){
+                                    Log.d(TAG, "onComplete: No Image");
+                                }
                                 holder.textViewChatName.setText(documentSnapshots.get("name").toString());
                                 getActivity().setTitle("Chat - " + documentSnapshots.get("name").toString());
                                 break;
@@ -289,12 +315,14 @@ public class ChatFragment extends Fragment {
         TextView textViewChatTime;
         TextView textViewChatName;
         TextView textViewChatMsg;
+        ImageView imageViewChatPhoto;
         public UserChatHolder(@NonNull View itemView) {
             super(itemView);
             textViewChatMsg = itemView.findViewById(R.id.textViewChatMsg);
             textViewChatName = itemView.findViewById(R.id.textViewChatName);
             textViewChatTime = itemView.findViewById(R.id.textViewChatTime);
             imageButtonChatDelete = itemView.findViewById(R.id.imageButtonChatDelete);
+            imageViewChatPhoto = itemView.findViewById(R.id.imageViewChatPhoto);
         }
     }
 
