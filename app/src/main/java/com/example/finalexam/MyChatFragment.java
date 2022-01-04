@@ -1,6 +1,8 @@
 package com.example.finalexam;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -118,17 +120,12 @@ public class MyChatFragment extends Fragment {
             public void onClick(View v) {
                 mAuth.signOut();
                 mListener.logout();
-//                Intent intent  = new Intent(getContext(),AuthActivity.class);
-//                getActivity().finish();
-//                startActivity(intent);
-                //Logout
             }
         });
         binding.buttonNewChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Goto New Chat Fragment
-//                getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container,new NewChatFragment()).commit();
                 mListener.gotoNewChat();
             }
         });
@@ -146,16 +143,19 @@ public class MyChatFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull MyChatHolder holder, int position) {
+            final Uri[] uri = new Uri[1];
+            final String[] name = new String[1];
             Chats chat = chats.get(position);
             db.collection("chat").document("users").collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     for(QueryDocumentSnapshot documentSnapshots: task.getResult()){
                         if(documentSnapshots.get("userid").equals(chat.Name)){
-                            holder.textViewName.setText(documentSnapshots.get("name").toString());
+                            name[0] = documentSnapshots.get("name").toString();
+                            holder.textViewName.setText(name[0]);
                             try{
-                                Uri uri = Uri.parse(documentSnapshots.get("uri").toString());
-                                Picasso.get().load(uri).into(holder.imageViewChatPhoto);
+                                uri[0] = Uri.parse(documentSnapshots.get("uri").toString());
+                                Picasso.get().load(uri[0]).into(holder.imageViewChatPhoto);
                             }
                             catch(Exception e){
                                 Log.d(TAG, "onComplete: No Image");
@@ -173,6 +173,22 @@ public class MyChatFragment extends Fragment {
                 public void onClick(View v) {
                     //Goto the particular chat page
                     mListener.gotoChatFragment(chat.Name);
+                }
+            });
+
+            holder.imageViewChatPhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ImageView image = new ImageView(getContext());
+                    Picasso.get().load(uri[0]).into(image);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage(name[0])
+                            .setView(image)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            });
+                    builder.create().show();
                 }
             });
         }

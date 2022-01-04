@@ -1,6 +1,8 @@
 package com.example.finalexam;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -178,6 +180,21 @@ public class NewChatFragment extends Fragment {
                 public void onClick(View v) {
                     binding.textViewUserName.setText(user.getName());
                     userReceiverID = user.UserId;
+                }
+            });
+            holder.imageViewUserPhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ImageView image = new ImageView(getContext());
+                    Picasso.get().load(user.getUri()).into(image);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage(user.getName())
+                            .setView(image)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            });
+                    builder.create().show();
                 }
             });
         }
