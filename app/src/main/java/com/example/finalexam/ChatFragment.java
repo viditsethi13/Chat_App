@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -114,10 +117,64 @@ public class ChatFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.chat_menu_layout,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.menuButtonBlock){
+
+        }
+        else if(item.getItemId() == R.id.menuButtonDelete){
+            CollectionReference senderMsg = db.collection("chat").document(mAuth.getCurrentUser().getUid()).collection(mUserID);
+            CollectionReference receiverMsg = db.collection("chat").document(mUserID).collection(mAuth.getCurrentUser().getUid());
+
+            DocumentReference senderArray = db.collection("chat").document(mAuth.getCurrentUser().getUid());
+            DocumentReference receiverArray = db.collection("chat").document(mUserID);
+
+            senderMsg.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(QueryDocumentSnapshot document: task.getResult()) {
+                            senderMsg.document(document.getId()).delete();
+                        }
+                    }
+                    else{
+                        Log.d(TAG, "onComplete: "+ task.getException().getMessage());
+                    }
+                }
+            });
+
+            receiverMsg.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(QueryDocumentSnapshot document: task.getResult()){
+                            receiverMsg.document(document.getId()).delete();
+                        }
+                    }
+                    else{
+                        Log.d(TAG, "onComplete: "+ task.getException().getMessage());
+                    }
+                }
+            });
+
+            senderArray.update("allchats",FieldValue.arrayRemove(mUserID));
+            receiverArray.update("allchats",FieldValue.arrayRemove(mAuth.getCurrentUser().getUid()));
+            mListener.back();
+        }
+        return true;
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        setHasOptionsMenu(true);
         db.collection("chat").document("users").collection("users").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -178,49 +235,6 @@ public class ChatFragment extends Fragment {
             }
         });
 
-        binding.imageViewDeleteUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                CollectionReference senderMsg = db.collection("chat").document(mAuth.getCurrentUser().getUid()).collection(mUserID);
-                CollectionReference receiverMsg = db.collection("chat").document(mUserID).collection(mAuth.getCurrentUser().getUid());
-
-                DocumentReference senderArray = db.collection("chat").document(mAuth.getCurrentUser().getUid());
-                DocumentReference receiverArray = db.collection("chat").document(mUserID);
-
-                senderMsg.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            for(QueryDocumentSnapshot document: task.getResult()) {
-                                senderMsg.document(document.getId()).delete();
-                            }
-                        }
-                        else{
-                            Log.d(TAG, "onComplete: "+ task.getException().getMessage());
-                        }
-                    }
-                });
-
-                receiverMsg.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            for(QueryDocumentSnapshot document: task.getResult()){
-                                receiverMsg.document(document.getId()).delete();
-                            }
-                        }
-                        else{
-                            Log.d(TAG, "onComplete: "+ task.getException().getMessage());
-                        }
-                    }
-                });
-
-                senderArray.update("allchats",FieldValue.arrayRemove(mUserID));
-                receiverArray.update("allchats",FieldValue.arrayRemove(mAuth.getCurrentUser().getUid()));
-                mListener.back();
-            }
-        });
     }
 
     public class UserChatApdapter extends RecyclerView.Adapter<UserChatHolder>{

@@ -8,35 +8,13 @@
     android:padding="15dp"
     tools:context=".ChatFragment" >
 
-    <Button
-        android:id="@+id/buttonBLockUser"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="Block User"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/imageViewDeleteUser"
-        android:layout_width="45dp"
-        android:layout_height="38dp"
-        android:layout_marginEnd="8dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/ic_delete"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/buttonBLockUser" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewChat"
-        android:layout_width="389dp"
-        android:layout_height="492dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="387dp"
+        android:layout_height="575dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewDeleteUser" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editTextMsg"
@@ -64,7 +42,7 @@
         android:id="@+id/buttonChatSubmit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Submit"
+        android:text="Send"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/buttonChatClose" />

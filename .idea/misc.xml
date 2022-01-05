@@ -12,8 +12,10 @@
         <entry key="..\:/Fall 2021/MAD/finalExam/app/src/main/res/layout/fragment_my_chat.xml" value="0.17552083333333332" />
         <entry key="..\:/Fall 2021/MAD/finalExam/app/src/main/res/layout/fragment_new_chat.xml" value="0.17552083333333332" />
         <entry key="..\:/Fall 2021/MAD/finalExam/app/src/main/res/layout/fragment_register.xml" value="0.16666666666666666" />
-        <entry key="..\:/Fall 2021/MAD/finalExam/app/src/main/res/layout/my_chat_layout.xml" value="0.22" />
+        <entry key="..\:/Fall 2021/MAD/finalExam/app/src/main/res/layout/my_chat_layout.xml" value="0.3333333333333333" />
         <entry key="..\:/Fall 2021/MAD/finalExam/app/src/main/res/layout/users_layout.xml" value="0.17552083333333332" />
+        <entry key="..\:/Fall 2021/MAD/finalExam/app/src/main/res/menu/chat_menu_layout.xml" value="0.17552083333333332" />
+        <entry key="..\:/Fall 2021/MAD/finalExam/app/src/main/res/menu/mychat_menu_layout.xml" value="0.17552083333333332" />
       </map>
     </option>
   </component>

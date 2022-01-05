@@ -17,6 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -68,8 +71,27 @@ public class MyChatFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.mychat_menu_layout,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.menuButtonLogout){
+            mAuth.signOut();
+            mListener.logout();
+        }
+        else if(item.getItemId() == R.id.menuButtonNewChat){
+            mListener.gotoNewChat();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);
         getActivity().setTitle("My Chats");
 
         chats.clear();
@@ -115,20 +137,6 @@ public class MyChatFragment extends Fragment {
         });
 
 
-        binding.buttonLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAuth.signOut();
-                mListener.logout();
-            }
-        });
-        binding.buttonNewChat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Goto New Chat Fragment
-                mListener.gotoNewChat();
-            }
-        });
     }
     public class MyChatAdapter extends RecyclerView.Adapter<MyChatHolder>{
 
