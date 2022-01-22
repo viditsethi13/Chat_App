@@ -58,6 +58,8 @@ public class ChatFragment extends Fragment {
     private FirebaseAuth mAuth;
     List<Chats> chats = new ArrayList<>();
     Uri uriMe;
+    Uri uriYou;
+    String you;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -106,7 +108,7 @@ public class ChatFragment extends Fragment {
                     chats.sort(new Comparator<Chats>() {
                         @Override
                         public int compare(Chats o1, Chats o2) {
-                            return o1.Time.compareTo(o2.Time);
+                            return o2.Time.compareTo(o1.Time);
                         }
                     });
                     binding.recyclerViewChat.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -186,6 +188,20 @@ public class ChatFragment extends Fragment {
                 }
             }
         });
+
+        db.collection("chat").document("users").collection("users").document(mUserID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    uriYou = Uri.parse(task.getResult().get("uri").toString());
+                    you = task.getResult().get("name").toString();
+                    getActivity().setTitle("Chat - " + you);
+                }
+                else{
+                    uriYou = null;
+                }
+            }
+        });
         setupList();
 
         binding.buttonChatClose.setOnClickListener(new View.OnClickListener() {
@@ -260,26 +276,8 @@ public class ChatFragment extends Fragment {
                 }
             }
             else{
-                db.collection("chat").document("users").collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for(QueryDocumentSnapshot documentSnapshots: task.getResult()){
-                            if(documentSnapshots.get("userid").equals(chat.Name)){
-                                try{
-                                    Uri uri = Uri.parse(documentSnapshots.get("uri").toString());
-                                    Picasso.get().load(uri).into(holder.imageViewChatPhoto);
-                                }
-                                catch(Exception e){
-                                    Log.d(TAG, "onComplete: No Image");
-                                }
-                                holder.textViewChatName.setText(documentSnapshots.get("name").toString());
-                                getActivity().setTitle("Chat - " + documentSnapshots.get("name").toString());
-                                break;
-                            }
-                        }
-                    }
-                });
-
+                holder.textViewChatName.setText(you);
+                Picasso.get().load(uriYou).into(holder.imageViewChatPhoto);
                 holder.imageButtonChatDelete.setVisibility(View.INVISIBLE);
             }
             holder.textViewChatMsg.setText(chat.LastMsg);
