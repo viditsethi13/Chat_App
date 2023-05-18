@@ -18,6 +18,15 @@ You can download the app using APK file present in this git repository.
 
 
 <h3>Screenshots</h3>
+<div>
+  <img src="Screenshots/Login.jpg" width=200 />
+  <img src="Screenshots/Registration.jpg" width=200 />
+ </div>
+<div>
+  <img src="Screenshots/Home.jpg" width=200 />
+  <img src="Screenshots/New_Chat.jpg" width=200 />
+  <img src="Screenshots/Chat.jpg" width=200 />
+</div>
 <h3>Usage</h3>
 Before using the app, users are required to register by providing their email and profile photo. Once logged in, users will see the chat home page. To start a new chat, users can select any of their registered contacts and begin chatting. On the home page, users can view all of their previous chats, including the last message sent and the time it was sent.
 <h2>Architecture</h2>
